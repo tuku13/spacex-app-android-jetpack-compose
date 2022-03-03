@@ -1,5 +1,6 @@
 package hu.tuku13.spacex_compose.ui.launch_list
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -37,6 +38,7 @@ class LaunchListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val launches = repository.getLaunches()
             _launches.postValue(launches)
+            Log.d("RECOMPOSE", "re-composed" )
         }
     }
 }

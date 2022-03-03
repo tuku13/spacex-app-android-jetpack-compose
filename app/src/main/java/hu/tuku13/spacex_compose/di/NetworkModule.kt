@@ -1,5 +1,7 @@
 package hu.tuku13.spacex_compose.di
 
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,15 +20,23 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun providesSpaceXRepository(api: SpaceXApi) = SpaceXRepository(api)
+    fun provideSpaceXRepository(api: SpaceXApi) = SpaceXRepository(api)
 
     @Singleton
     @Provides
-    fun providesSpaceXApi(): SpaceXApi {
+    fun provideMoshi(): Moshi {
+        return Moshi.Builder()
+            .add(KotlinJsonAdapterFactory())
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideSpaceXApi(moshi: Moshi): SpaceXApi {
         return Retrofit.Builder()
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .baseUrl(BASE_URL)
             .build()
-            .create()
+            .create(SpaceXApi::class.java)
     }
 }

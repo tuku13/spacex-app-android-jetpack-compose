@@ -3,10 +3,14 @@ package hu.tuku13.spacex_compose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Scaffold
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.List
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,6 +29,7 @@ import hu.tuku13.spacex_compose.ui.navigation.Routes.ROCKET_LIST_SCREEN
 import hu.tuku13.spacex_compose.ui.roadster.RoadsterScreen
 import hu.tuku13.spacex_compose.ui.rocket_details.RocketDetailsScreen
 import hu.tuku13.spacex_compose.ui.rocket_list.RocketListScreen
+import hu.tuku13.spacex_compose.ui.theme.Purple700
 import hu.tuku13.spacex_compose.ui.theme.SpaceXComposeTheme
 
 @AndroidEntryPoint
@@ -34,7 +39,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             SpaceXComposeTheme {
                 val navController = rememberNavController()
+                val scaffoldState = rememberScaffoldState()
                 Scaffold(
+                    scaffoldState = scaffoldState,
+                    topBar = {
+                        TopAppBar(
+                            title = {
+                                Text("SpaceX app")
+                                    },
+                            backgroundColor = MaterialTheme.colors.background
+                        ) },
                     bottomBar =  {
                         BottomNavigationBar(
                             items = listOf(
@@ -59,43 +73,49 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(it.route)
                             }
                         )
-                    }
-                ) {
-                    NavHost(
-                        navController = navController,
-                        startDestination = LAUNCH_LIST_SCREEN
-                    ) {
-                        composable(LAUNCH_LIST_SCREEN) {
-                            LaunchListScreen(navController = navController)
-                        }
-                        composable(ROCKET_LIST_SCREEN) {
-                            RocketListScreen(navController = navController)
-                        }
-                        composable(ROADSTER_SCREEN) {
-                            RoadsterScreen(navController = navController)
-                        }
-                        composable(
-                            route = "$ROCKET_DETAILS/{rocketId}",
-                            arguments = listOf(
-                                navArgument("rocketId") {
-                                    type = NavType.StringType
-                                }
-                            )
-                            ) {
-                            RocketDetailsScreen(navController = navController)
-                        }
-                        composable(
-                            route = "$LAUNCH_DETAILS/{launchId}",
-                            arguments = listOf(
-                                navArgument("launchId") {
-                                    type = NavType.StringType
-                                }
-                            )
+                    },
+                    content = { paddingValues ->
+                        NavHost(
+                            navController = navController,
+                            startDestination = LAUNCH_LIST_SCREEN,
+                            modifier = Modifier.padding(paddingValues)
                         ) {
-                            LaunchDetailsScreen(navController = navController)
+                            composable(LAUNCH_LIST_SCREEN) {
+                                LaunchListScreen(navController = navController)
+                            }
+                            composable(ROCKET_LIST_SCREEN) {
+                                RocketListScreen(navController = navController)
+                            }
+                            composable(ROADSTER_SCREEN) {
+                                RoadsterScreen(navController = navController)
+                            }
+                            composable(
+                                route = "$ROCKET_DETAILS/{rocketId}",
+                                arguments = listOf(
+                                    navArgument("rocketId") {
+                                        type = NavType.StringType
+                                    }
+                                )
+                            ) {
+                                RocketDetailsScreen(navController = navController)
+                            }
+                            composable(
+                                route = "$LAUNCH_DETAILS/{launchId}",
+                                arguments = listOf(
+                                    navArgument("launchId") {
+                                        type = NavType.StringType
+                                    }
+                                )
+                            ) {
+                                val launchId = it.arguments?.getString("launchId") ?: ""
+                                LaunchDetailsScreen(
+                                    navController = navController,
+                                    launchId = launchId
+                                )
+                            }
                         }
                     }
-                }
+                )
             }
         }
     }
