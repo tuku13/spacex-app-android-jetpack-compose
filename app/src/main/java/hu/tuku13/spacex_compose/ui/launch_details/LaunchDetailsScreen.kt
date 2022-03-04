@@ -37,8 +37,9 @@ import hu.tuku13.spacex_compose.ui.theme.red
 fun LaunchDetailsScreen(
     navController: NavController,
     launchId: String,
-    viewModel: LaunchDetailsViewModel = hiltViewModel()
 ) {
+    val viewModel: LaunchDetailsViewModel = hiltViewModel()
+
     val launch = viewModel.launch.observeAsState()
     val launchPad = viewModel.launchPad.observeAsState()
     val rocket = viewModel.rocket.observeAsState()

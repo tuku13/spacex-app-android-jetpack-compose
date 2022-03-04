@@ -97,7 +97,11 @@ class MainActivity : ComponentActivity() {
                                     }
                                 )
                             ) {
-                                RocketDetailsScreen(navController = navController)
+                                val rocketId = it.arguments?.getString("rocketId") ?: ""
+                                RocketDetailsScreen(
+                                    navController = navController,
+                                    rocketId = rocketId
+                                )
                             }
                             composable(
                                 route = "$LAUNCH_DETAILS/{launchId}",
